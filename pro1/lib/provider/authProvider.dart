@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,8 @@ import 'package:pro1/models/profile_model.dart';
 import 'package:pro1/util/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../screens/3_otp_screen.dart';
+import '../screens/bookingScreen.dart';
+import '../screens/otpScreen.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isSignedIn = false;
@@ -97,6 +99,28 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  void resendOtp(BuildContext context, String phoneNumber) async {
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+          phoneNumber: phoneNumber,
+          verificationCompleted:
+              (PhoneAuthCredential phoneAuthCredential) async {
+            await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+          },
+          verificationFailed: (erroe) {
+            throw Exception(erroe.message);
+          },
+          codeSent: (verificationId, forceResendingToken) {
+            showSnackBar(context, 'Code resent');
+          },
+          codeAutoRetrievalTimeout: (verificationId) {
+            showSnackBar(context, 'Time out');
+          });
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message.toString());
+    }
+  }
+
   // DATABASE OPERATIONS
   Future<bool> checkExitingUser() async {
     DocumentSnapshot snapshot =
@@ -158,27 +182,25 @@ class AuthProvider extends ChangeNotifier {
     required UserModel userModel,
     required Function onSuccess,
   }) async {
-    _isLoading = true;
     notifyListeners();
     try {
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(now);
-      userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
+      userModel.phoneNumber = userModel.phoneNumber;
       userModel.createdAt = formattedDate;
-      userModel.uid = _firebaseAuth.currentUser!.uid;
+      userModel.uid = userModel.uid;
       await _firebaseFirestore
           .collection("booking")
           .doc(userModel.uid)
           .set(userModel.toMap())
           .then((value) {
         onSuccess();
+        print('Booking data saved');
         _isLoading = false;
-        isBooking = true;
         notifyListeners();
       });
-    } on FirebaseAuthException catch (e) {
-      print(e.message.toString());
-      showSnackBar(context, e.message.toString());
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -189,5 +211,60 @@ class AuthProvider extends ChangeNotifier {
     _isSignedIn = false;
     notifyListeners();
     return true;
+  }
+
+  Future<String> getBookingCode(String Curuid) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await _firebaseFirestore.collection('booking').doc(Curuid).get();
+    if (snapshot.exists) {
+      String bookindCode = snapshot.data()!['bookingCode'].toString();
+      return bookindCode;
+    } else {
+      return '';
+    }
+  }
+
+  Future<Map<String, String>> realtimeBookingData() async {
+    Map<String, String> bookingCodes = {};
+    Map<String, int> min = {'A': 999, 'B': 999, 'C': 999};
+
+    final QuerySnapshot<Map<String, dynamic>> snapshot =
+        await _firebaseFirestore.collection('booking').get();
+
+    for (var doc in snapshot.docs) {
+      var bookingCode = doc['bookingCode'];
+      String category = bookingCode[0];
+      String numberString = bookingCode.substring(1);
+      int currentNumber = int.tryParse(numberString) ?? 0;
+      if (currentNumber < min[category]!) {
+        min[category] = currentNumber;
+      }
+    }
+
+    String bookCode_A = min['A'] == 999 ? 'A0' : 'A${min['A']}';
+    String bookCode_B = min['B'] == 999 ? 'B0' : 'B${min['B']}';
+    String bookCode_C = min['C'] == 999 ? 'C0' : 'C${min['C']}';
+
+    bookingCodes = {
+      'A': bookCode_A,
+      'B': bookCode_B,
+      'C': bookCode_C,
+    };
+
+    return bookingCodes;
+  }
+
+  Future<String> queueLeft(String char1st) async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot =
+        await _firebaseFirestore.collection('booking').get();
+    int count = 0;
+    for (var doc in snapshot.docs) {
+      var bookingCode = doc['bookingCode'];
+      String category = bookingCode[0];
+      if (category == char1st) {
+        count++;
+      }
+    }
+    return (count - 1).toString();
   }
 }

@@ -17,17 +17,20 @@ class CustomButton extends StatelessWidget {
     if (Check) {
       color = Colors.grey;
     }
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        primary: color,
-        shadowColor: Colors.black,
-        elevation: 5,
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+    return Container(
+      width: 150,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          primary: color,
+          shadowColor: Colors.black,
+          elevation: 5,
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
       ),
     );
   }

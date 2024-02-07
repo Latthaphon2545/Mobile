@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '5_home_screen.dart';
+import '../util/custom_button.dart';
+import 'homeScreen.dart';
 import '../models/profile_model.dart';
-import '../provider/auth_provider.dart';
+import '../provider/authProvider.dart';
 
 class UserInfomationScreen extends StatefulWidget {
   // final String uidCur;
@@ -17,7 +17,7 @@ class UserInfomationScreen extends StatefulWidget {
 
 class _UserInfomationScreenState extends State<UserInfomationScreen> {
   final nameController = TextEditingController();
-  
+
   @override
   void dispose() {
     nameController.dispose();
@@ -30,7 +30,7 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
         Provider.of<AuthProvider>(context, listen: true).isLoading;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Infomation'),
+        title: const Text('Your Infomation'),
       ),
       body: SafeArea(
         child: isLoading == true
@@ -65,9 +65,11 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => storeData(),
-                        child: const Text('Next'),
+                      child: CustomButton(
+                        text: 'Next',
+                        onPressed: () {
+                          storeData();
+                        },
                       ),
                     ),
                   ],
@@ -80,12 +82,8 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
   void storeData() async {
     final ap = Provider.of<AuthProvider>(context, listen: false);
     String name = nameController.text.trim();
-    UserModel userModelCur = UserModel(
-      name: name,
-      phoneNumber: '',
-      createdAt: '',
-      uid: ''
-    );
+    UserModel userModelCur =
+        UserModel(name: name, phoneNumber: '', createdAt: '', uid: '');
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -97,7 +95,7 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
       ap.saveUserDataTofirebasa(
         context: context,
         userModel: userModelCur,
-        onSuccess: () async {        
+        onSuccess: () async {
           ap.saveUserDataToSP().then(
                 (value) => ap.setSingIn().then(
                       (value) => Navigator.pushAndRemoveUntil(

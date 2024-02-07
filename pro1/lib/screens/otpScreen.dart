@@ -1,9 +1,9 @@
+// ignore_for_file: sort_child_properties_last
+
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
-import 'package:pro1/screens/2_register_screen.dart';
-import 'package:pro1/screens/5_home_screen.dart';
-import 'package:pro1/screens/4_user_Infomation.dart';
-import '../provider/auth_provider.dart';
+import 'package:pro1/screens/userInfomation.dart';
+import '../provider/authProvider.dart';
 import '../util/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +27,7 @@ class _OtpScreenState extends State<OtpScreen> {
         Provider.of<AuthProvider>(context, listen: true).isLoading;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OTP Screen'),
+        title: const Text('OTP'),
       ),
       body: SafeArea(
         child: isLoading == true
@@ -42,6 +42,16 @@ class _OtpScreenState extends State<OtpScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const Text('An SMS code was sent to'),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.phone,
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
                     Pinput(
                       length: 6,
                       showCursor: true,
@@ -69,7 +79,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     SizedBox(
                         width: double.infinity,
                         height: 50,
-                        child: CoutomButton(
+                        child: CustomButton(
                           text: 'Verify',
                           onPressed: () {
                             if (otpCode != null) {
@@ -82,12 +92,19 @@ class _OtpScreenState extends State<OtpScreen> {
                     const SizedBox(height: 20),
                     const Text('Didn\'t receive the code?',
                         style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 20),
-                    const Text('Resend Code',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
+                    ElevatedButton(
+                      onPressed: () {
+                        resentOtp();
+                      },
+                      child: const Text(
+                        'Resend Code',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        elevation: 0,
+                      ),
+                    )
                   ],
                 ),
               )),
@@ -114,5 +131,10 @@ class _OtpScreenState extends State<OtpScreen> {
             }
           });
         });
+  }
+
+  void resentOtp() {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    ap.resendOtp(context, widget.phone);
   }
 }

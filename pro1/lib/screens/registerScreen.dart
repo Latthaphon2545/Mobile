@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:pro1/provider/auth_provider.dart';
+import 'package:pro1/provider/authProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../util/custom_button.dart';
+import '../util/utils.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -40,15 +41,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
       body: SafeArea(
-        child: Center(
+        child: Container(
             child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 35),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 cursorColor: colorTheam,
@@ -68,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Phone Number',
+                  hintText: 'Phone number',
                   hintStyle: const TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
@@ -114,11 +113,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: CoutomButton(
+                child: CustomButton(
                   text: 'Next',
-                  onPressed: () => sendPhoneNumber(),
+                  onPressed: () {
+                    if (phoneController.text.trim().length >= 9) {
+                      sendPhoneNumber();
+                    } else {
+                      showSnackBar(
+                          context, 'Please enter a valid phone number');
+                    }
+                  },
                 ),
-              ),        
+              ),
             ],
           ),
         )),
