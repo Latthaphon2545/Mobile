@@ -69,7 +69,7 @@ Widget _buildTable1(
   if (color == const Color.fromRGBO(202, 255, 170, 1)) {
     colorDish = const Color.fromRGBO(95, 255, 0, 1);
   } else {
-    colorDish = const Color.fromRGBO(255, 88, 88, 1);
+    colorDish = const Color.fromRGBO(255, 0, 0, 1);
   }
   return Container(
     width: width,
@@ -92,7 +92,7 @@ Widget _buildTable2(
   if (color == const Color.fromRGBO(202, 255, 170, 1)) {
     colorDish = const Color.fromRGBO(95, 255, 0, 1);
   } else {
-    colorDish = const Color.fromRGBO(255, 88, 88, 1);
+    colorDish = const Color.fromRGBO(255, 0, 0, 1);
   }
   return Container(
     width: width,
@@ -120,7 +120,7 @@ Widget _buildTable1Land(
   if (color == const Color.fromRGBO(202, 255, 170, 1)) {
     colorDish = const Color.fromRGBO(95, 255, 0, 1);
   } else {
-    colorDish = const Color.fromRGBO(255, 88, 88, 1);
+    colorDish = const Color.fromRGBO(255, 0, 0, 1);
   }
 
   if (many == 1) {

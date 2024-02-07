@@ -4,11 +4,13 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool Check;
+  final double width;
   const CustomButton(
       {Key? key,
       required this.text,
       required this.onPressed,
-      this.Check = false})
+      this.Check = false,
+      this.width = 150})
       : super(key: key);
 
   @override
@@ -18,7 +20,7 @@ class CustomButton extends StatelessWidget {
       color = Colors.grey;
     }
     return Container(
-      width: 150,
+      width: width,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

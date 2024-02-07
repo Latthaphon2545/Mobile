@@ -1,6 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pro1/util/utils.dart';
 import 'package:provider/provider.dart';
@@ -187,40 +191,21 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 20,
               ),
-              const TableShow2P(
-                color: Color.fromRGBO(202, 255, 170, 1),
+              StreamScrenn1(
+                onTableChange: getRealtimeTable1,
               ),
               const SizedBox(
                 height: 20,
               ),
-              const TableShow4P(
-                color: Color.fromRGBO(202, 255, 170, 1),
+              StreamScrenn2(
+                onTableChange: getRealtimeTable2,
               ),
               const SizedBox(
                 height: 20,
               ),
-              const TableShow8P(
-                color: Color.fromRGBO(202, 255, 170, 1),
+              StreamScrenn3(
+                onTableChange: getRealtimeTable3,
               ),
-              // SizedBox(
-              //   height: 30,
-              // ),
-              // TableShow8P(
-              //   color: Color.fromRGBO(202, 255, 170, 1),
-              // ),
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     ap.signOut().then(
-              //           (value) => Navigator.pushAndRemoveUntil(
-              //             context,
-              //             MaterialPageRoute(
-              //                 builder: (context) => const RegisterScreen()),
-              //             (route) => false,
-              //           ),
-              //         );
-              //   },
-              //   child: const Text('Sign Out'),
-              // ),
             ],
           ),
         ),
@@ -283,5 +268,215 @@ class showQ extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Future<bool> getRealtimeTable1() async {
+  final Completer<bool> completer = Completer<bool>();
+  final databaseReference = FirebaseDatabase.instance.reference();
+
+  databaseReference.child('12P').get().then((DataSnapshot snapshot) {
+    var data = snapshot.value;
+    data = data.toString().split(':')[1].split('}')[0].trim();
+    if (data == 'true') {
+      completer.complete(true);
+    } else if (data == 'false') {
+      completer.complete(false);
+    }
+  });
+
+  return completer.future;
+}
+
+Future<bool> getRealtimeTable2() async {
+  final Completer<bool> completer = Completer<bool>();
+  final databaseReference = FirebaseDatabase.instance.reference();
+
+  databaseReference.child('34P').get().then((DataSnapshot snapshot) {
+    var data = snapshot.value;
+    data = data.toString().split(':')[1].split('}')[0].trim();
+    if (data == 'true') {
+      completer.complete(true);
+    } else if (data == 'false') {
+      completer.complete(false);
+    }
+  });
+
+  return completer.future;
+}
+
+Future<bool> getRealtimeTable3() async {
+  final Completer<bool> completer = Completer<bool>();
+  final databaseReference = FirebaseDatabase.instance.reference();
+
+  databaseReference.child('58P').get().then((DataSnapshot snapshot) {
+    var data = snapshot.value;
+    data = data.toString().split(':')[1].split('}')[0].trim();
+    if (data == 'true') {
+      completer.complete(true);
+    } else if (data == 'false') {
+      completer.complete(false);
+    }
+  });
+
+  return completer.future;
+}
+
+class StreamScrenn1 extends StatefulWidget {
+  final Function onTableChange;
+  const StreamScrenn1({Key? key, required this.onTableChange})
+      : super(key: key);
+
+  @override
+  State<StreamScrenn1> createState() => _StreamScrenn1State();
+}
+
+class _StreamScrenn1State extends State<StreamScrenn1> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<bool>(
+        stream: Stream.periodic(const Duration(seconds: 1))
+            .asyncMap((_) => widget.onTableChange()),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // or any loading indicator
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            bool isTableAvailable = snapshot.data!;
+            Color color;
+            Color colorText;
+            if (isTableAvailable) {
+              color = Color.fromRGBO(202, 255, 170, 1);
+              colorText = Colors.green;
+            } else {
+              color = Color.fromRGBO(255, 164, 164, 1);
+              colorText = Colors.red;
+            }
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: 300,
+                  child: TableShow2P(
+                    color: color,
+                  ),
+                ),
+                Text(isTableAvailable ? 'Available' : 'Unavailable',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: colorText))
+              ],
+            );
+          }
+          return const Text('No data available.');
+        });
+  }
+}
+
+class StreamScrenn2 extends StatefulWidget {
+  final Function onTableChange;
+  const StreamScrenn2({Key? key, required this.onTableChange})
+      : super(key: key);
+
+  @override
+  State<StreamScrenn2> createState() => _StreamScrenn2State();
+}
+
+class _StreamScrenn2State extends State<StreamScrenn2> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<bool>(
+        stream: Stream.periodic(const Duration(seconds: 1))
+            .asyncMap((_) => widget.onTableChange()),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // or any loading indicator
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            bool isTableAvailable = snapshot.data!;
+            Color color;
+            Color colorText;
+            if (isTableAvailable) {
+              color = Color.fromRGBO(202, 255, 170, 1);
+              colorText = Colors.green;
+            } else {
+              color = Color.fromRGBO(255, 164, 164, 1);
+              colorText = Colors.red;
+            }
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: 300,
+                  child: TableShow4P(
+                    color: color,
+                  ),
+                ),
+                Text(isTableAvailable ? 'Available' : 'Unavailable',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: colorText))
+              ],
+            );
+          }
+          return const Text('No data available.');
+        });
+  }
+}
+
+class StreamScrenn3 extends StatefulWidget {
+  final Function onTableChange;
+  const StreamScrenn3({Key? key, required this.onTableChange})
+      : super(key: key);
+
+  @override
+  State<StreamScrenn3> createState() => _StreamScrenn3State();
+}
+
+class _StreamScrenn3State extends State<StreamScrenn3> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<bool>(
+        stream: Stream.periodic(const Duration(seconds: 1))
+            .asyncMap((_) => widget.onTableChange()),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // or any loading indicator
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            bool isTableAvailable = snapshot.data!;
+            Color color;
+            Color colorText;
+            if (isTableAvailable) {
+              color = Color.fromRGBO(202, 255, 170, 1);
+              colorText = Colors.green;
+            } else {
+              color = Color.fromRGBO(255, 164, 164, 1);
+              colorText = Colors.red;
+            }
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: 300,
+                  child: TableShow8P(
+                    color: color,
+                  ),
+                ),
+                Text(isTableAvailable ? 'Available' : 'Unavailable',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: colorText))
+              ],
+            );
+          }
+          return const Text('No data available.');
+        });
   }
 }

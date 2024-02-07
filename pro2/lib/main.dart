@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'BookList/bookingCodeC.dart';
 import 'firebase_options.dart';
+import 'screen/waitListScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: _title,
       home: Scaffold(
-        body: Center(child: codeCScreen()),
+        body: waitList(),
       ),
     );
   }
