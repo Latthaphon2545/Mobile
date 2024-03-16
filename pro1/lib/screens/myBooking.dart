@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:pro1/util/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:pro1/provider/authProvider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../util/navigation.dart';
 import '../util/custom_button.dart';
-import 'homeScreen.dart';
+import 'qrCode.dart';
 import 'registerScreen.dart';
 
 class MyBooking extends StatefulWidget {
@@ -20,6 +21,7 @@ class MyBooking extends StatefulWidget {
 
 class _MyBookingState extends State<MyBooking> {
   int _currentIndex = 1;
+  String uid = '';
   String name = '';
   String phone = '';
   String bookingCodde = '';
@@ -94,8 +96,9 @@ class _MyBookingState extends State<MyBooking> {
                 height: 1.0,
               ),
             )),
-        body: Center(
-            child: Container(
+        body: Center(child: Builder(builder: (context) {
+          if (bookingCodde != "") {
+            return Container(
                 width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height * 0.4,
                 padding: const EdgeInsets.all(20),
@@ -149,8 +152,7 @@ class _MyBookingState extends State<MyBooking> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text('No.'),
-                                Text(
-                                    '\t\t${bookingCodde != '' ? bookingCodde : '-'}',
+                                Text('\t\t${bookingCodde}',
                                     style: const TextStyle(
                                         fontSize: 40,
                                         fontWeight: FontWeight.bold))
@@ -164,7 +166,7 @@ class _MyBookingState extends State<MyBooking> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Queue Left'),
+                                const Text('Waiting List'),
                                 StreamBuilder<String>(
                                   stream: Stream.periodic(
                                           const Duration(seconds: 1))
@@ -239,13 +241,23 @@ class _MyBookingState extends State<MyBooking> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Seat Quantities :'),
-                        Text(
-                            '${numberOfPeople != '' ? numberOfPeople : '-'}  People')
+                        Text('${numberOfPeople}  People')
                       ],
                     ),
-                    const Text(
-                        '**  We reserve the right to reserve 1 table for 1 number.**',
+                    const Text('** One number can reserve only one table. **',
                         style: TextStyle(color: Colors.red, fontSize: 12)),
+                    CustomButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => QRCode(
+                                    data: bookingCodde,
+                                  )),
+                        );
+                      },
+                      text: 'แบบยืนยันตัวไนงี้',
+                    ),
                     Center(
                         child: bookingCodde.isNotEmpty
                             ? CustomButton(
@@ -279,11 +291,28 @@ class _MyBookingState extends State<MyBooking> {
                                     },
                                   );
                                 },
-                                text: 'Cancel This Booking',
+                                text: 'Cancel',
                               )
                             : const SizedBox()),
                   ],
-                ))),
+                ));
+          } else {
+            return Center(
+                child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.4,
+              color: const Color.fromRGBO(231, 233, 232, 1),
+              alignment: Alignment.center,
+              child: const Text(
+                'No Booking',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ));
+          }
+        })),
         bottomNavigationBar: navBarBottom(
           currentIndex: _currentIndex,
         ));

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,7 +13,6 @@ import '../util/table.dart';
 import '../util/navigation.dart';
 import 'registerScreen.dart';
 import 'bookingScreen.dart';
-import 'myBooking.dart';
 
 class HomeScreen extends StatefulWidget {
   // final String uid;

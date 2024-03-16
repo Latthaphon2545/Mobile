@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:custom_line_indicator_bottom_navbar/custom_line_indicator_bottom_navbar.dart';
+import 'package:pro2/screen/scanQrCode.dart';
 
 import 'history.dart';
 import 'tableStatus.dart';
@@ -42,6 +43,9 @@ class _navBarBottomState extends State<navBarBottom> {
           } else if (index == 2) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => historyScreen()));
+          } else if (index == 3) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => scanQr()));
           }
         });
       },

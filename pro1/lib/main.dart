@@ -5,13 +5,16 @@ import 'screens/welcomeScreen.dart';
 import 'provider/authProvider.dart';
 import 'firebase_options.dart';
 
+import './provider/noti.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
+    await FirebaseAPI().initNotification();
   } catch (error) {
-    print("Firebase initialization error: $error");
+    debugPrint("Firebase initialization error: $error");
   }
   runApp(const MyApp());
 }

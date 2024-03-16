@@ -97,7 +97,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         resentOtp();
                       },
                       child: const Text(
-                        'Resend Code',
+                        'Resend code',
                         style: TextStyle(color: Colors.red),
                       ),
                       style: ElevatedButton.styleFrom(
