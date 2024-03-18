@@ -796,6 +796,23 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleMLKit/BarcodeScanning (4.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitBarcodeScanning (~> 3.0.0)
+  - GoogleMLKit/MLKitCore (4.0.0):
+    - MLKitCommon (~> 9.0.0)
+  - GoogleToolboxForMac/DebugUtils (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - GoogleToolboxForMac/Defines (2.3.2)
+  - GoogleToolboxForMac/Logger (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - "GoogleToolboxForMac/NSData+zlib (2.3.2)":
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.2)":
+    - GoogleToolboxForMac/DebugUtils (= 2.3.2)
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.2)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.3.2)"
   - GoogleUtilities/AppDelegateSwizzler (7.12.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -814,6 +831,8 @@ PODS:
   - GoogleUtilities/Reachability (7.12.0):
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.12.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
   - "gRPC-C++ (1.49.1)":
     - "gRPC-C++/Implementation (= 1.49.1)"
@@ -876,8 +895,29 @@ PODS:
     - BoringSSL-GRPC (= 0.0.24)
     - gRPC-Core/Interface (= 1.49.1)
   - gRPC-Core/Interface (1.49.1)
-  - GTMSessionFetcher/Core (3.3.1)
+  - GTMSessionFetcher/Core (2.3.0)
   - leveldb-library (1.22.2)
+  - MLImage (1.0.0-beta4)
+  - MLKitBarcodeScanning (3.0.0):
+    - MLKitCommon (~> 9.0)
+    - MLKitVision (~> 5.0)
+  - MLKitCommon (9.0.0):
+    - GoogleDataTransport (~> 9.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - GoogleUtilities/UserDefaults (~> 7.0)
+    - GoogleUtilitiesComponents (~> 1.0)
+    - GTMSessionFetcher/Core (< 3.0, >= 1.1)
+  - MLKitVision (5.0.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (< 3.0, >= 1.1)
+    - MLImage (= 1.0.0-beta4)
+    - MLKitCommon (~> 9.0)
+  - mobile_scanner (3.5.6):
+    - Flutter
+    - GoogleMLKit/BarcodeScanning (~> 4.0.0)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
@@ -902,6 +942,7 @@ DEPENDENCIES:
   - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
+  - mobile_scanner (from `.symlinks/plugins/mobile_scanner/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - smart_auth (from `.symlinks/plugins/smart_auth/ios`)
 
@@ -927,11 +968,18 @@ SPEC REPOS:
     - FirebaseStorage
     - GoogleAppMeasurement
     - GoogleDataTransport
+    - GoogleMLKit
+    - GoogleToolboxForMac
     - GoogleUtilities
+    - GoogleUtilitiesComponents
     - "gRPC-C++"
     - gRPC-Core
     - GTMSessionFetcher
     - leveldb-library
+    - MLImage
+    - MLKitBarcodeScanning
+    - MLKitCommon
+    - MLKitVision
     - nanopb
     - PromisesObjC
     - PromisesSwift
@@ -954,6 +1002,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
+  mobile_scanner:
+    :path: ".symlinks/plugins/mobile_scanner/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   smart_auth:
@@ -988,11 +1038,19 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   GoogleAppMeasurement: bb3c564c3efb933136af0e94899e0a46167466a8
   GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
+  GoogleMLKit: 2bd0dc6253c4d4f227aad460f69215a504b2980e
+  GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
+  GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   "gRPC-C++": 2df8cba576898bdacd29f0266d5236fa0e26ba6a
   gRPC-Core: a21a60aefc08c68c247b439a9ef97174b0c54f96
-  GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
+  GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
+  MLImage: 7bb7c4264164ade9bf64f679b40fb29c8f33ee9b
+  MLKitBarcodeScanning: 04e264482c5f3810cb89ebc134ef6b61e67db505
+  MLKitCommon: c1b791c3e667091918d91bda4bba69a91011e390
+  MLKitVision: 8baa5f46ee3352614169b85250574fde38c36f49
+  mobile_scanner: 38dcd8a49d7d485f632b7de65e4900010187aef2
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265

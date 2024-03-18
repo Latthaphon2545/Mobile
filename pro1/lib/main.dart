@@ -1,6 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'screens/homeScreen.dart';
+import 'screens/myBooking.dart';
+import 'screens/registerScreen.dart';
+import 'screens/userInfomation.dart';
 import 'screens/welcomeScreen.dart';
 import 'provider/authProvider.dart';
 import 'firebase_options.dart';
@@ -27,19 +31,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<AuthProvider>(
-            create: (_) => AuthProvider(),
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        // Removed 'const' here
+        debugShowCheckedModeBanner: false,
+        title: _title,
+        home: const Scaffold(
+          body: Center(
+            child: WelcomeScreen(),
           ),
-        ],
-        child: const MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: _title,
-          home: Scaffold(
-            body: Center(
-              child: WelcomeScreen(),
-            ),
-          ),
-        ));
+        ),
+        initialRoute: '/welcome',
+        routes: {
+          '/welcome': (context) => const WelcomeScreen(),
+          '/RegisterScreen': (context) => const RegisterScreen(),
+          '/homeScrenn': (context) => const HomeScreen(),
+          '/myBooking': (context) => const MyBooking(),
+          '/userInfomation': (context) => UserInfomationScreen(),
+        },
+      ),
+    );
   }
 }

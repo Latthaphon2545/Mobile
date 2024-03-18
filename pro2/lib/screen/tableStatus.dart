@@ -1,10 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-
-import '../Custom/table.dart';
-import 'navbar.dart';
 
 Color colorToggleActive = const Color.fromRGBO(237, 37, 78, 1);
 Color colorToggleInactive = const Color.fromRGBO(97, 255, 0, 1);
@@ -17,7 +16,6 @@ class tableStatusScrren extends StatefulWidget {
 }
 
 class _tableStatusScrrenState extends State<tableStatusScrren> {
-  int _selectedIndex = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,27 +34,8 @@ class _tableStatusScrrenState extends State<tableStatusScrren> {
           statusP12(),
           statusP34(),
           statusP58(),
-          SizedBox(height: 40),
-          TableShow2P(color: Color.fromRGBO(202, 255, 170, 1)),
-          SizedBox(height: 10),
-          Text('Available',
-              style: TextStyle(
-                  color: Colors.green,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold)),
-          SizedBox(height: 40),
-          TableShow2P(color: Color.fromRGBO(255, 88, 88, 0.8)),
-          SizedBox(height: 10),
-          Text('Unavailable',
-              style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold)),
         ],
       )),
-      bottomNavigationBar: navBarBottom(
-        currentIndex: _selectedIndex,
-      ),
     );
   }
 }
@@ -70,6 +49,17 @@ class statusP12 extends StatefulWidget {
 
 class _statusP12State extends State<statusP12> {
   bool _isSwitched12 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getRealtimeTable('12P').then((value) {
+      setState(() {
+        _isSwitched12 = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -83,7 +73,7 @@ class _statusP12State extends State<statusP12> {
                 setState(() {
                   _isSwitched12 = value;
                   print(_isSwitched12);
-                  raeltimeDatabase12P(_isSwitched12);
+                  raeltimeDatabase(_isSwitched12, '12P');
                 });
               },
               activeColor: colorToggleActive,
@@ -105,6 +95,17 @@ class statusP34 extends StatefulWidget {
 
 class _statusP34State extends State<statusP34> {
   bool _isSwitched34 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getRealtimeTable('34P').then((value) {
+      setState(() {
+        _isSwitched34 = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -118,7 +119,7 @@ class _statusP34State extends State<statusP34> {
                 setState(() {
                   _isSwitched34 = value;
                   print(_isSwitched34);
-                  raeltimeDatabase34P(_isSwitched34);
+                  raeltimeDatabase(_isSwitched34, '34P');
                 });
               },
               activeColor: colorToggleActive,
@@ -140,6 +141,19 @@ class statusP58 extends StatefulWidget {
 
 class _statusP58State extends State<statusP58> {
   bool _isSwitched58 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getRealtimeTable('58P').then((value) {
+      setState(() {
+        _isSwitched58 = value;
+      });
+    });
+
+    print(_isSwitched58);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -153,7 +167,7 @@ class _statusP58State extends State<statusP58> {
                 setState(() {
                   _isSwitched58 = value;
                   print(_isSwitched58);
-                  raeltimeDatabase58P(_isSwitched58);
+                  raeltimeDatabase(_isSwitched58, '58P');
                 });
               },
               activeColor: colorToggleActive,
@@ -166,32 +180,29 @@ class _statusP58State extends State<statusP58> {
   }
 }
 
-void raeltimeDatabase12P(bool _isSwitched) {
-  DatabaseReference mRootRef = FirebaseDatabase.instance.reference();
-  DatabaseReference m12PRef = mRootRef.child("12P");
-  if (_isSwitched == false) {
-    m12PRef.child("status").set('true');
-  } else if (_isSwitched == true) {
-    m12PRef.child("status").set('false');
-  }
+Future<bool> getRealtimeTable(String nameCol) async {
+  final Completer<bool> completer = Completer<bool>();
+  final databaseReference = FirebaseDatabase.instance.reference();
+
+  databaseReference.child(nameCol).get().then((DataSnapshot snapshot) {
+    var data = snapshot.value;
+    data = data.toString().split(':')[1].split('}')[0].trim();
+    if (data == 'false') {
+      completer.complete(true);
+    } else if (data == 'true') {
+      completer.complete(false);
+    }
+  });
+
+  return completer.future;
 }
 
-void raeltimeDatabase34P(bool _isSwitched) {
+void raeltimeDatabase(bool _isSwitched, String nameCol) {
   DatabaseReference mRootRef = FirebaseDatabase.instance.reference();
-  DatabaseReference m34PRef = mRootRef.child("34P");
+  DatabaseReference mPRef = mRootRef.child(nameCol);
   if (_isSwitched == false) {
-    m34PRef.child("status").set('true');
+    mPRef.child("status").set('true');
   } else if (_isSwitched == true) {
-    m34PRef.child("status").set('false');
-  }
-}
-
-void raeltimeDatabase58P(bool _isSwitched) {
-  DatabaseReference mRootRef = FirebaseDatabase.instance.reference();
-  DatabaseReference m58PRef = mRootRef.child("58P");
-  if (_isSwitched == false) {
-    m58PRef.child("status").set('true');
-  } else if (_isSwitched == true) {
-    m58PRef.child("status").set('false');
+    mPRef.child("status").set('false');
   }
 }

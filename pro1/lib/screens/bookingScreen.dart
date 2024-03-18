@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pro1/screens/myBooking.dart';
 import 'package:provider/provider.dart';
 
 import '../models/profile_model.dart';
@@ -209,29 +209,27 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Future<bool> confrimBooking(BuildContext context) async {
-    return await showDialog(
+    return await showCupertinoDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Booking'),
-          content: const Text('Are you sure you want to book this table?'),
-          actions: <Widget>[
-            CustomButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              text: 'No',
-              Check: true,
-            ),
-            CustomButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              text: 'Yes',
-            ),
-          ],
-        );
-      },
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text('Confirm Booking'),
+        content: Text('Are you sure you want to book?'),
+        actions: <Widget>[
+          CupertinoDialogAction(
+            child: Text('Yes'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+          // cacle button
+          CupertinoDialogAction(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -255,10 +253,11 @@ class _BookingScreenState extends State<BookingScreen> {
           userModel: userModel,
           onSuccess: () {
             showSnackBar(context, 'Booking Success');
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const MyBooking()),
-                (route) => false);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/myBooking',
+              (route) => false,
+            );
           });
     } else {
       showSnackBar(context, 'Please select number of people');
@@ -299,5 +298,3 @@ class TitleAndSub extends StatelessWidget {
     );
   }
 }
-
-

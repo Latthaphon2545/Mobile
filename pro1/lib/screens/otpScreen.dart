@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
-import 'package:pro1/screens/userInfomation.dart';
 import '../provider/authProvider.dart';
 import '../util/utils.dart';
 import 'package:provider/provider.dart';
@@ -121,13 +120,8 @@ class _OtpScreenState extends State<OtpScreen> {
         onSuccess: (uid) {
           ap.checkExitingUser().then((value) async {
             if (value == false) {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      // builder: (context) => UserInfomationScreen(
-                      //       uidCur: uid,)),
-                      builder: (context) => UserInfomationScreen()),
-                  (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/userInfomation', (route) => false);
             }
           });
         });

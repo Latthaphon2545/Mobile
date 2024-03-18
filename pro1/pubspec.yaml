@@ -51,6 +51,8 @@ dependencies:
   custom_line_indicator_bottom_navbar: ^0.0.8
   firebase_messaging: ^14.7.16
   qr_flutter: ^4.1.0
+  path_provider: ^2.1.2
+  image_gallery_saver: ^2.0.3
 
 dev_dependencies:
   flutter_test:

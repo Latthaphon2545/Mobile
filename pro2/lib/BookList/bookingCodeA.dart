@@ -15,16 +15,16 @@ class codeAScreen extends StatefulWidget {
 
 class _codeAScreenState extends State<codeAScreen> {
   Timer? _timer;
-  Future<QuerySnapshot<Map<String, dynamic>>>? _future;
 
   @override
   void initState() {
     super.initState();
-    _future = getUserBookingData();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _future = getUserBookingData();
-      });
+      if (mounted) {
+        setState(() {
+          // Your state change code here
+        });
+      }
     });
   }
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pro2/Custom/custom_button.dart';
+import 'package:pro2/screen/history.dart';
 
 import '../BookList/bookingCodeA.dart';
 import '../BookList/bookingCodeB.dart';
 import '../BookList/bookingCodeC.dart';
-import 'navbar.dart';
 
 class waitList extends StatefulWidget {
   const waitList({Key? key}) : super(key: key);
@@ -21,23 +21,6 @@ class _waitListState extends State<waitList> {
   bool actveB = true;
   bool actveC = true;
 
-  // Timer? _timer;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-  //     setState(() {
-  //     });
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   _timer?.cancel();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +28,20 @@ class _waitListState extends State<waitList> {
           title: const Text(
             'Waitlist',
           ),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => historyScreen()),
+                );
+              },
+              icon: Icon(
+                Icons.history,
+                color: const Color.fromRGBO(237, 37, 78, 1),
+              ),
+            ),
+          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(4.0),
             child: Container(
@@ -124,7 +121,21 @@ class _waitListState extends State<waitList> {
           ),
         ),
       ),
-      bottomNavigationBar: navBarBottom(currentIndex: 0),
+      // bottomNavigationBar: navBarBottom(currentIndex: 0),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => scanQr()),
+      //     );
+      //   },
+      //   child: const Icon(
+      //     Icons.qr_code,
+      //     color: Colors.white,
+      //   ),
+      //   backgroundColor: Color.fromRGBO(237, 37, 78, 1),
+      //   elevation: 0,
+      // ),
     );
   }
 }

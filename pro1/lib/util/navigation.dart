@@ -21,10 +21,6 @@ class _navBarBottomState extends State<navBarBottom> {
     selectedIndex = widget.currentIndex;
   }
 
-  List<Widget> _pages = [
-    HomeScreen(),
-    MyBooking(),
-  ];
 
   @override
   Widget build(BuildContext context) {

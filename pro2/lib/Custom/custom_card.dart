@@ -92,20 +92,6 @@ class cardWaitlist extends StatelessWidget {
               text: 'Delete',
               Check: true,
             ),
-            CustomButton(
-              onPressed: () {
-                alert(
-                  context,
-                  'Check in this booking?',
-                  () async {
-                    saveHistory(context, userData);
-                    Delete(context, userData);
-                  },
-                  Screen,
-                );
-              },
-              text: 'Check In',
-            ),
           ],
         )
       ]),
@@ -118,40 +104,6 @@ class cardWaitlist extends StatelessWidget {
         .collection('booking')
         .doc(userData['uid'])
         .delete();
-
-    // await _firebaseFirestore.collection('users').doc(userData['uid']).delete();
-  }
-
-  void saveHistory(BuildContext context, Map<String, dynamic> userData) async {
-    final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-    await _firebaseFirestore.collection('history').add(userData);
-  }
-
-  void alert(
-      BuildContext context, String message, Function function, Widget Screen) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                function();
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }
 
@@ -228,4 +180,31 @@ class cardHistory extends StatelessWidget {
       ]),
     );
   }
+}
+
+void alert(
+    BuildContext context, String message, Function function, Widget Screen) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              function();
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
 }

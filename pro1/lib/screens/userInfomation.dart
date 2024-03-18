@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../util/custom_button.dart';
-import 'homeScreen.dart';
 import '../models/profile_model.dart';
 import '../provider/authProvider.dart';
 
@@ -97,15 +96,9 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
         userModel: userModelCur,
         onSuccess: () async {
           ap.saveUserDataToSP().then(
-                (value) => ap.setSingIn().then(
-                      (value) => Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                        (route) => false,
-                      ),
-                    ),
+                (value) => ap.setSingIn().then((value) =>
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/homeScrenn', (route) => false)),
               );
         },
       );

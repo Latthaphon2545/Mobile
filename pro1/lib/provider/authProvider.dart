@@ -9,7 +9,6 @@ import 'package:pro1/models/profile_model.dart';
 import 'package:pro1/util/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../screens/bookingScreen.dart';
 import '../screens/otpScreen.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -86,6 +85,7 @@ class AuthProvider extends ChangeNotifier {
 
       User? user = (await _firebaseAuth.signInWithCredential(creds)).user!;
 
+      // ignore: unnecessary_null_comparison
       if (user != null) {
         _uid = user.uid;
         onSuccess(_uid);
@@ -126,10 +126,8 @@ class AuthProvider extends ChangeNotifier {
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection('users').doc(_uid).get();
     if (snapshot.exists) {
-      // print('User already exists');
       return false;
     } else {
-      // print('User does not exists');
       return false;
     }
   }
@@ -173,7 +171,7 @@ class AuthProvider extends ChangeNotifier {
   Future getUserDataFromSP() async {
     SharedPreferences s = await SharedPreferences.getInstance();
     String? data = s.getString('user_model') ?? '';
-    _userModel = UserModel.fromJson(jsonDecode(data!));
+    _userModel = UserModel.fromJson(jsonDecode(data));
     notifyListeners();
   }
 
@@ -266,5 +264,10 @@ class AuthProvider extends ChangeNotifier {
       }
     }
     return (count - 1).toString();
+  }
+
+  void logout() {
+    _isSignedIn = false;
+    notifyListeners();
   }
 }

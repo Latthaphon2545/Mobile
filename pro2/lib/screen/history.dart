@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../Custom/custom_card.dart';
-import 'navbar.dart';
 
 class historyScreen extends StatelessWidget {
   const historyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    int _selectedIndex = 2;
     return Scaffold(
       appBar: AppBar(
         title: const Text('History'),
@@ -22,9 +20,6 @@ class historyScreen extends StatelessWidget {
           )
       ),
       body: const historyList(),
-      bottomNavigationBar: navBarBottom(
-        currentIndex: _selectedIndex,
-      ),
     );
   }
 }

@@ -1,16 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pro1/util/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:pro1/provider/authProvider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../util/navigation.dart';
 import '../util/custom_button.dart';
+import '../util/showCupertinoDialog.dart';
 import 'qrCode.dart';
-import 'registerScreen.dart';
 
 class MyBooking extends StatefulWidget {
   const MyBooking({super.key});
@@ -51,6 +51,7 @@ class _MyBookingState extends State<MyBooking> {
           bookingCodde = userData.docs[0]['bookingCode'];
           bookingDate = userData.docs[0]['createdAt'];
           numberOfPeople = userData.docs[0]['numberOfPeople'];
+          uid = userData.docs[0]['uid'];
         });
       } else {
         print('No user data found!');
@@ -75,9 +76,9 @@ class _MyBookingState extends State<MyBooking> {
       });
     } catch (e) {
       showSnackBar(context, 'No user data found!');
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const RegisterScreen()),
+        '/RegisterScreen',
         (route) => false,
       );
     }
@@ -88,14 +89,36 @@ class _MyBookingState extends State<MyBooking> {
     final ap = Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
         appBar: AppBar(
-            title: const Text('My Booking'),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(4.0),
-              child: Container(
-                color: Color.fromRGBO(237, 37, 78, 1),
-                height: 1.0,
-              ),
-            )),
+          title: const Text('My Booking'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(4.0),
+            child: Container(
+              color: const Color.fromRGBO(237, 37, 78, 1),
+              height: 1.0,
+            ),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                showMyDialog(
+                  context: context,
+                  title: 'Logout',
+                  content: 'Are you sure you want to logout?',
+                  actionText: 'Logout',
+                  onPressed: () async {
+                    ap.logout();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/RegisterScreen',
+                      (route) => false,
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.logout),
+            )
+          ],
+        ),
         body: Center(child: Builder(builder: (context) {
           if (bookingCodde != "") {
             return Container(
@@ -126,6 +149,34 @@ class _MyBookingState extends State<MyBooking> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => QRCode(
+                                      // uid
+                                      data: uid,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.qr_code,
+                                size: 30,
+                                color: Color.fromRGBO(237, 37, 78, 1),
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 7.0,
+                                    color: Color.fromARGB(255, 88, 88, 88),
+                                    offset: Offset(
+                                      3,
+                                      3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                         Row(
@@ -152,7 +203,7 @@ class _MyBookingState extends State<MyBooking> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text('No.'),
-                                Text('\t\t${bookingCodde}',
+                                Text('\t\t$bookingCodde',
                                     style: const TextStyle(
                                         fontSize: 40,
                                         fontWeight: FontWeight.bold))
@@ -177,15 +228,9 @@ class _MyBookingState extends State<MyBooking> {
                                         ConnectionState.waiting) {
                                       return const CircularProgressIndicator(); // or any loading indicator
                                     } else if (snapshot.hasError) {
-                                      return const Text(
-                                        '\t\t-',
-                                        style: TextStyle(
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.bold),
-                                      );
+                                      return Text('Error: ${snapshot.error}');
                                     } else if (snapshot.hasData) {
                                       String bookingCodes = snapshot.data!;
-                                      print(bookingCodes);
                                       return Text(
                                         '\t\t$bookingCodes',
                                         style: const TextStyle(
@@ -217,9 +262,7 @@ class _MyBookingState extends State<MyBooking> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              Text(bookingDate.length > 10
-                                  ? bookingDate.substring(0, 11)
-                                  : '-')
+                              Text(bookingDate.substring(0, 11))
                             ],
                           ),
                           Row(
@@ -231,65 +274,30 @@ class _MyBookingState extends State<MyBooking> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              Text(bookingDate.length > 10
-                                  ? bookingDate.substring(10)
-                                  : '-'),
+                              Text(bookingDate.substring(10)),
                             ],
                           ),
                         ]),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Seat Quantities :'),
-                        Text('${numberOfPeople}  People')
+                        const Text('Seat Quantities :'),
+                        Text('$numberOfPeople  People')
                       ],
                     ),
                     const Text('** One number can reserve only one table. **',
                         style: TextStyle(color: Colors.red, fontSize: 12)),
-                    CustomButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => QRCode(
-                                    data: bookingCodde,
-                                  )),
-                        );
-                      },
-                      text: 'แบบยืนยันตัวไนงี้',
-                    ),
                     Center(
                         child: bookingCodde.isNotEmpty
                             ? CustomButton(
                                 onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Confirmation'),
-                                        content: const Text(
-                                            'Are you sure you want to delete the booking?'),
-                                        actions: [
-                                          CustomButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // Close the alert dialog
-                                            },
-                                            text: 'Cancel',
-                                            Check: true,
-                                          ),
-                                          CustomButton(
-                                            onPressed: () {
-                                              deleteBooking();
-                                              Navigator.of(context)
-                                                  .pop(); // Close the alert dialog
-                                            },
-                                            text: 'Delete',
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
+                                  showMyDialog(
+                                      context: context,
+                                      title: 'Cancel Booking',
+                                      content:
+                                          'Are you sure you want to cancel booking?',
+                                      actionText: 'Yes',
+                                      onPressed: () => deleteBooking());
                                 },
                                 text: 'Cancel',
                               )

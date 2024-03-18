@@ -9,14 +9,10 @@ import 'package:pro1/util/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:pro1/provider/authProvider.dart';
 
-import '../util/table.dart';
 import '../util/navigation.dart';
-import 'registerScreen.dart';
 import 'bookingScreen.dart';
 
 class HomeScreen extends StatefulWidget {
-  // final String uid;
-  // const HomeScreen({Key? key, required this.uid});
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -49,9 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       showSnackBar(context, 'No user data found!');
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const RegisterScreen()),
+        '/RegisterScreen',
         (route) => false,
       );
     }
@@ -189,21 +185,29 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 20,
               ),
-              StreamScrenn1(
-                onTableChange: getRealtimeTable1,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              StreamScrenn2(
-                onTableChange: getRealtimeTable2,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              StreamScrenn3(
-                onTableChange: getRealtimeTable3,
-              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  StreamScreen(
+                    onTableChange: () => getRealtimeTable('12P'),
+                    peopleCount: '1-2',
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  StreamScreen(
+                    onTableChange: () => getRealtimeTable('34P'),
+                    peopleCount: '3-4',
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  StreamScreen(
+                    onTableChange: () => getRealtimeTable('58P'),
+                    peopleCount: '5-8',
+                  ),
+                ],
+              )
             ],
           ),
         ),
@@ -269,11 +273,11 @@ class showQ extends StatelessWidget {
   }
 }
 
-Future<bool> getRealtimeTable1() async {
+Future<bool> getRealtimeTable(String childNode) async {
   final Completer<bool> completer = Completer<bool>();
   final databaseReference = FirebaseDatabase.instance.reference();
 
-  databaseReference.child('12P').get().then((DataSnapshot snapshot) {
+  databaseReference.child(childNode).get().then((DataSnapshot snapshot) {
     var data = snapshot.value;
     data = data.toString().split(':')[1].split('}')[0].trim();
     if (data == 'true') {
@@ -286,50 +290,18 @@ Future<bool> getRealtimeTable1() async {
   return completer.future;
 }
 
-Future<bool> getRealtimeTable2() async {
-  final Completer<bool> completer = Completer<bool>();
-  final databaseReference = FirebaseDatabase.instance.reference();
-
-  databaseReference.child('34P').get().then((DataSnapshot snapshot) {
-    var data = snapshot.value;
-    data = data.toString().split(':')[1].split('}')[0].trim();
-    if (data == 'true') {
-      completer.complete(true);
-    } else if (data == 'false') {
-      completer.complete(false);
-    }
-  });
-
-  return completer.future;
-}
-
-Future<bool> getRealtimeTable3() async {
-  final Completer<bool> completer = Completer<bool>();
-  final databaseReference = FirebaseDatabase.instance.reference();
-
-  databaseReference.child('58P').get().then((DataSnapshot snapshot) {
-    var data = snapshot.value;
-    data = data.toString().split(':')[1].split('}')[0].trim();
-    if (data == 'true') {
-      completer.complete(true);
-    } else if (data == 'false') {
-      completer.complete(false);
-    }
-  });
-
-  return completer.future;
-}
-
-class StreamScrenn1 extends StatefulWidget {
+class StreamScreen extends StatefulWidget {
   final Function onTableChange;
-  const StreamScrenn1({Key? key, required this.onTableChange})
+  final String peopleCount;
+  const StreamScreen(
+      {Key? key, required this.onTableChange, required this.peopleCount})
       : super(key: key);
 
   @override
-  State<StreamScrenn1> createState() => _StreamScrenn1State();
+  State<StreamScreen> createState() => _StreamScreenState();
 }
 
-class _StreamScrenn1State extends State<StreamScrenn1> {
+class _StreamScreenState extends State<StreamScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
@@ -355,115 +327,17 @@ class _StreamScrenn1State extends State<StreamScrenn1> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  width: 300,
-                  child: TableShow2P(
-                    color: color,
-                  ),
-                ),
-                Text(isTableAvailable ? 'Available' : 'Unavailable',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: colorText))
-              ],
-            );
-          }
-          return const Text('No data available.');
-        });
-  }
-}
-
-class StreamScrenn2 extends StatefulWidget {
-  final Function onTableChange;
-  const StreamScrenn2({Key? key, required this.onTableChange})
-      : super(key: key);
-
-  @override
-  State<StreamScrenn2> createState() => _StreamScrenn2State();
-}
-
-class _StreamScrenn2State extends State<StreamScrenn2> {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-        stream: Stream.periodic(const Duration(seconds: 1))
-            .asyncMap((_) => widget.onTableChange()),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // or any loading indicator
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            bool isTableAvailable = snapshot.data!;
-            Color color;
-            Color colorText;
-            if (isTableAvailable) {
-              color = Color.fromRGBO(202, 255, 170, 1);
-              colorText = Colors.green;
-            } else {
-              color = Color.fromRGBO(255, 164, 164, 1);
-              colorText = Colors.red;
-            }
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  width: 300,
-                  child: TableShow4P(
-                    color: color,
-                  ),
-                ),
-                Text(isTableAvailable ? 'Available' : 'Unavailable',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: colorText))
-              ],
-            );
-          }
-          return const Text('No data available.');
-        });
-  }
-}
-
-class StreamScrenn3 extends StatefulWidget {
-  final Function onTableChange;
-  const StreamScrenn3({Key? key, required this.onTableChange})
-      : super(key: key);
-
-  @override
-  State<StreamScrenn3> createState() => _StreamScrenn3State();
-}
-
-class _StreamScrenn3State extends State<StreamScrenn3> {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-        stream: Stream.periodic(const Duration(seconds: 1))
-            .asyncMap((_) => widget.onTableChange()),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // or any loading indicator
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            bool isTableAvailable = snapshot.data!;
-            Color color;
-            Color colorText;
-            if (isTableAvailable) {
-              color = Color.fromRGBO(202, 255, 170, 1);
-              colorText = Colors.green;
-            } else {
-              color = Color.fromRGBO(255, 164, 164, 1);
-              colorText = Colors.red;
-            }
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  width: 300,
-                  child: TableShow8P(
-                    color: color,
+                  width: 200,
+                  child: Row(
+                    children: [
+                      Text("${widget.peopleCount} People"),
+                      const SizedBox(width: 10),
+                      Icon(
+                        Icons.person,
+                        color: color,
+                        size: 50,
+                      )
+                    ],
                   ),
                 ),
                 Text(isTableAvailable ? 'Available' : 'Unavailable',

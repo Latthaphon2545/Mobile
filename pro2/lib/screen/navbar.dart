@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:custom_line_indicator_bottom_navbar/custom_line_indicator_bottom_navbar.dart';
-import 'package:pro2/screen/scanQrCode.dart';
 
-import 'history.dart';
 import 'tableStatus.dart';
 import 'waitListScreen.dart';
 
@@ -22,6 +20,7 @@ class _navBarBottomState extends State<navBarBottom> {
     super.initState();
     selectedIndex = widget.currentIndex;
   }
+
   @override
   Widget build(BuildContext context) {
     return CustomLineIndicatorBottomNavbar(
@@ -35,17 +34,15 @@ class _navBarBottomState extends State<navBarBottom> {
         setState(() {
           selectedIndex = index;
           if (index == 0) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => waitList()));
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => waitList()),
+                (route) => false);
           } else if (index == 1) {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => tableStatusScrren()));
-          } else if (index == 2) {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => historyScreen()));
-          } else if (index == 3) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => scanQr()));
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => tableStatusScrren()),
+                (route) => false);
           }
         });
       },
@@ -60,10 +57,6 @@ class _navBarBottomState extends State<navBarBottom> {
         CustomBottomBarItems(
           label: 'Tabke Status',
           icon: Icons.table_restaurant,
-        ),
-        CustomBottomBarItems(
-          label: 'History',
-          icon: Icons.history,
         ),
       ],
     );

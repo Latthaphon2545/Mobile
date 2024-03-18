@@ -16,5 +16,4 @@ class FirebaseAPI {
     debugPrint('Token: $token');
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
   }
-  
 }
