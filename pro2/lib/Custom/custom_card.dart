@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'custom_button.dart';
 import 'showCupertinoDialog.dart';
 
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+
 class cardWaitlist extends StatelessWidget {
   final Map<String, dynamic> userData;
   // sreen to go variable
@@ -62,7 +64,15 @@ class cardWaitlist extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Phone Number'),
-                Text('${userData['phoneNumber']}'),
+                TextButton(
+                    onPressed: () async {
+                      await FlutterPhoneDirectCaller.callNumber(
+                          '${userData['phoneNumber']}');
+                    },
+                    child: Text('${userData['phoneNumber']}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromRGBO(0, 0, 0, 1))))
               ],
             ),
             const SizedBox(height: 10),

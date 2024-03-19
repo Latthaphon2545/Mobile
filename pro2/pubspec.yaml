@@ -26,6 +26,8 @@ dependencies:
   icon: ^2.2.1
   mobile_scanner: ^4.0.1
   curved_nav_bar: ^0.0.2
+  url_launcher: ^6.2.5
+  flutter_phone_direct_caller: ^2.1.1
 
 dev_dependencies:
   flutter_test:
