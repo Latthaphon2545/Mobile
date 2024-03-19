@@ -9,14 +9,14 @@ import 'screens/welcomeScreen.dart';
 import 'provider/authProvider.dart';
 import 'firebase_options.dart';
 
-import './provider/noti.dart';
+// import './provider/noti.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
-    await FirebaseAPI().initNotification();
+    // await FirebaseAPI().initNotification();
   } catch (error) {
     debugPrint("Firebase initialization error: $error");
   }
@@ -37,7 +37,6 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        // Removed 'const' here
         debugShowCheckedModeBanner: false,
         title: _title,
         home: const Scaffold(

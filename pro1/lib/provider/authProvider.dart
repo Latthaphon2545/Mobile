@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pro1/models/profile_model.dart';
@@ -66,7 +67,7 @@ class AuthProvider extends ChangeNotifier {
             showSnackBar(context, 'Time out');
           });
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+      showSnackBar(context, "Not able to send OTP");
     }
   }
 
@@ -202,13 +203,13 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> signOut() async {
-    final SharedPreferences s = await SharedPreferences.getInstance();
-    await s.clear();
-    await _firebaseAuth.signOut();
+  void logout(BuildContext context) async {
+    _firebaseAuth.signOut();
     _isSignedIn = false;
+    _uid = '';
+    _userModel = null;
+    // Navigator.pushReplacementNamed(context, '/welcome');
     notifyListeners();
-    return true;
   }
 
   Future<String> getBookingCode(String Curuid) async {
@@ -222,52 +223,84 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, String>> realtimeBookingData() async {
-    Map<String, String> bookingCodes = {};
-    Map<String, int> min = {'A': 999, 'B': 999, 'C': 999};
+  Stream<Map<String, String>> realtimeBookingData() {
+    final StreamController<Map<String, String>> controller =
+        StreamController<Map<String, String>>();
 
-    final QuerySnapshot<Map<String, dynamic>> snapshot =
-        await _firebaseFirestore.collection('booking').get();
+    _firebaseFirestore.collection('booking').snapshots().listen((snapshot) {
+      Map<String, String> bookingCodes = {};
+      Map<String, int> min = {'A': 999, 'B': 999, 'C': 999};
 
-    for (var doc in snapshot.docs) {
-      var bookingCode = doc['bookingCode'];
-      String category = bookingCode[0];
-      String numberString = bookingCode.substring(1);
-      int currentNumber = int.tryParse(numberString) ?? 0;
-      if (currentNumber < min[category]!) {
-        min[category] = currentNumber;
+      for (var doc in snapshot.docs) {
+        var bookingCode = doc['bookingCode'];
+        String category = bookingCode[0];
+        String numberString = bookingCode.substring(1);
+        int currentNumber = int.tryParse(numberString) ?? 0;
+        if (currentNumber < min[category]!) {
+          min[category] = currentNumber;
+        }
       }
-    }
 
-    String bookCode_A = min['A'] == 999 ? 'A0' : 'A${min['A']}';
-    String bookCode_B = min['B'] == 999 ? 'B0' : 'B${min['B']}';
-    String bookCode_C = min['C'] == 999 ? 'C0' : 'C${min['C']}';
+      String bookCode_A = min['A'] == 999 ? 'A0' : 'A${min['A']}';
+      String bookCode_B = min['B'] == 999 ? 'B0' : 'B${min['B']}';
+      String bookCode_C = min['C'] == 999 ? 'C0' : 'C${min['C']}';
 
-    bookingCodes = {
-      'A': bookCode_A,
-      'B': bookCode_B,
-      'C': bookCode_C,
-    };
+      bookingCodes = {
+        'A': bookCode_A,
+        'B': bookCode_B,
+        'C': bookCode_C,
+      };
 
-    return bookingCodes;
+      controller.add(bookingCodes);
+    });
+    return controller.stream;
   }
 
-  Future<String> queueLeft(String char1st) async {
-    final QuerySnapshot<Map<String, dynamic>> snapshot =
-        await _firebaseFirestore.collection('booking').get();
-    int count = 0;
-    for (var doc in snapshot.docs) {
-      var bookingCode = doc['bookingCode'];
-      String category = bookingCode[0];
-      if (category == char1st) {
-        count++;
+  Stream<String> queueLeft(String char1st) {
+    final StreamController<String> controller = StreamController<String>();
+    _firebaseFirestore.collection('booking').snapshots().listen((snapshot) {
+      int count = 0;
+      for (var doc in snapshot.docs) {
+        var bookingCode = doc['bookingCode'];
+        String category = bookingCode[0];
+        if (category == char1st) {
+          count++;
+        }
       }
-    }
-    return (count - 1).toString();
+      controller.add((count - 1).toString());
+    });
+
+    return controller.stream;
   }
 
-  void logout() {
-    _isSignedIn = false;
-    notifyListeners();
+  Stream<TableStatus> getRealtimeTable(String childNode) {
+    final StreamController<TableStatus> controller =
+        StreamController<TableStatus>();
+    final databaseReference = FirebaseDatabase.instance.ref();
+
+    databaseReference.onValue.listen((DatabaseEvent event) {
+      var data = event.snapshot.value as Map<dynamic, dynamic>;
+      var nodes = ['12P', '34P', '58P'];
+      for (var node in nodes) {
+        var ref = data[node];
+        String value = ref['status'];
+        int count = ref['people'];
+        if (childNode == node) {
+          if (value == 'true') {
+            controller.add(TableStatus(status: true, peopleCount: count));
+          } else if (value == 'false') {
+            controller.add(TableStatus(status: false, peopleCount: count));
+          }
+        }
+      }
+    });
+    return controller.stream;
   }
+}
+
+class TableStatus {
+  final bool status;
+  final int peopleCount;
+
+  TableStatus({required this.status, required this.peopleCount});
 }

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../Custom/showCupertinoDialog.dart';
 import '../main.dart';
 
 class scanQr extends StatefulWidget {
@@ -38,43 +39,25 @@ class _scanQrState extends State<scanQr> {
   }
 
   Future<void> _showMyDialog(BuildContext context, String uid) async {
-    // user data from the database
-    final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-        await getUserData(uid);
+      // user data from the database
+      final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await getUserData(uid);
 
-    if (!documentSnapshot.exists) {
-      return;
-    }
+      if (!documentSnapshot.exists) {
+        return;
+      }
 
-    return showCupertinoDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text('Booking'),
-          content: Column(
-            children: <Widget>[
-              Text('Name: ${documentSnapshot.data()!['name']}'),
-              Text('Phone: ${documentSnapshot.data()!['phoneNumber']}'),
-            ],
-          ),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              child: Text('Confirm'),
-              onPressed: () async {
-                await saveHistory(context, uid);
-                await Delete(context, uid);
-              },
-            ),
-            CupertinoDialogAction(
-              child: Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+      showMyDialog(
+        context: context,
+        title: 'Booking',
+        content: 'Name: ${documentSnapshot.data()!['name']}\n'
+                 'Phone: ${documentSnapshot.data()!['phoneNumber']}',
+        actionText: 'Confirm',
+        onPressed: () async {
+          await saveHistory(context, uid);
+          await Delete(context, uid);
+        },
+      );
   }
 
   Future<void> Delete(BuildContext context, String uid) async {

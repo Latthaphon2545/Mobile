@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_button.dart';
+import 'showCupertinoDialog.dart';
 
 class cardWaitlist extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -80,13 +81,15 @@ class cardWaitlist extends StatelessWidget {
           children: [
             CustomButton(
               onPressed: () {
-                alert(
-                  context,
-                  'Delete this booking?',
-                  () {
+                showMyDialog(
+                  context: context,
+                  title: 'Delete Booking',
+                  content:
+                      'Name: ${userData['name']}\nPhone: ${userData['phoneNumber']}',
+                  actionText: 'Confirm',
+                  onPressed: () async {
                     Delete(context, userData);
                   },
-                  Screen,
                 );
               },
               text: 'Delete',
@@ -180,31 +183,4 @@ class cardHistory extends StatelessWidget {
       ]),
     );
   }
-}
-
-void alert(
-    BuildContext context, String message, Function function, Widget Screen) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              function();
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
 }

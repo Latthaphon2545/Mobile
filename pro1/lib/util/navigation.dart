@@ -21,7 +21,6 @@ class _navBarBottomState extends State<navBarBottom> {
     selectedIndex = widget.currentIndex;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return CustomLineIndicatorBottomNavbar(
@@ -34,18 +33,17 @@ class _navBarBottomState extends State<navBarBottom> {
       onTap: (index) {
         setState(() {
           selectedIndex = index;
-          if (index == 0) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomeScreen()));
-          } else if (index == 1) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => MyBooking()));
+          if (index == 0 && selectedIndex != widget.currentIndex) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()));
+          } else if (index == 1 && selectedIndex != widget.currentIndex) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const MyBooking()));
           }
         });
       },
       enableLineIndicator: true,
       lineIndicatorWidth: 3,
-      indicatorType: IndicatorType.Top,
       customBottomBarItems: [
         CustomBottomBarItems(
           label: 'Home',

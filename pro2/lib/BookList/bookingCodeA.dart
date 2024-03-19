@@ -1,8 +1,7 @@
-// ignore_for_file: use_build_context_synchronously
-import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pro2/BookList/waitList.dart';
 
 import '../Custom/custom_card.dart';
 
@@ -14,30 +13,10 @@ class codeAScreen extends StatefulWidget {
 }
 
 class _codeAScreenState extends State<codeAScreen> {
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          // Your state change code here
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) =>
-      FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        future: getUserBookingData(),
+      StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: getUserBookingData("A"),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -64,16 +43,4 @@ class _codeAScreenState extends State<codeAScreen> {
           }
         },
       );
-
-  Future<QuerySnapshot<Map<String, dynamic>>> getUserBookingData() async {
-    final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-    String bookingCode1st = 'A';
-    return await _firebaseFirestore
-        .collection('booking')
-        .where('bookingCode', isGreaterThanOrEqualTo: bookingCode1st)
-        .where('bookingCode',
-            isLessThan:
-                '${bookingCode1st}z') // assuming 'z' comes after possible bookingCode values
-        .get();
-  }
 }

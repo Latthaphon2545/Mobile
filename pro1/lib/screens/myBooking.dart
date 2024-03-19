@@ -31,7 +31,6 @@ class _MyBookingState extends State<MyBooking> {
   @override
   void initState() {
     super.initState();
-    getUserData();
     getBookingData();
   }
 
@@ -55,32 +54,17 @@ class _MyBookingState extends State<MyBooking> {
         });
       } else {
         print('No user data found!');
+        setState(() {
+          name = '';
+          phone = '';
+          bookingCodde = '';
+          bookingDate = '';
+          numberOfPeople = '';
+          uid = '';
+        });
       }
     } catch (e) {
       print(e);
-    }
-  }
-
-  void getUserData() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-    final QuerySnapshot<Map<String, dynamic>> userData =
-        await _firebaseFirestore
-            .collection('users')
-            .where('uid', isEqualTo: ap.userModel.uid)
-            .get();
-    try {
-      setState(() {
-        name = userData.docs[0]['name'];
-        phone = userData.docs[0]['phoneNumber'];
-      });
-    } catch (e) {
-      showSnackBar(context, 'No user data found!');
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/RegisterScreen',
-        (route) => false,
-      );
     }
   }
 
@@ -90,6 +74,7 @@ class _MyBookingState extends State<MyBooking> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('My Booking'),
+          backgroundColor: Colors.white,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(4.0),
             child: Container(
@@ -106,7 +91,7 @@ class _MyBookingState extends State<MyBooking> {
                   content: 'Are you sure you want to logout?',
                   actionText: 'Logout',
                   onPressed: () async {
-                    ap.logout();
+                    ap.logout(context);
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       '/RegisterScreen',
@@ -119,36 +104,150 @@ class _MyBookingState extends State<MyBooking> {
             )
           ],
         ),
-        body: Center(child: Builder(builder: (context) {
-          if (bookingCodde != "") {
-            return Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.4,
-                padding: const EdgeInsets.all(20),
-                color: const Color.fromRGBO(231, 233, 232, 1),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.person,
-                              size: 50,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+        body: Container(
+          color: Color.fromARGB(255, 255, 255, 255),
+          child: Center(child: Builder(builder: (context) {
+            if (bookingCodde != "") {
+              return Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  padding: const EdgeInsets.all(20),
+                  color: const Color.fromRGBO(231, 233, 232, 1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.person,
+                                size: 50,
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                phone,
+                                style: const TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Divider(
+                        color: Color.fromARGB(59, 0, 0, 0),
+                        height: 0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                              width: 100,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('No.'),
+                                  Text('\t\t$bookingCodde',
+                                      style: const TextStyle(
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.bold))
+                                ],
+                              )),
+                          const Text('|',
+                              style: TextStyle(
+                                  fontSize: 60,
+                                  fontWeight: FontWeight.w100,
+                                  color: Color.fromARGB(59, 0, 0, 0))),
+                          Container(
+                              width: 100,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Waiting List'),
+                                  StreamBuilder<String>(
+                                    stream: ap.queueLeft(bookingCodde[0]),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else if (snapshot.hasData) {
+                                        String queueLeft = snapshot.data!;
+                                        if (int.parse(queueLeft) < 0) {
+                                          getBookingData();
+                                        }
+                                        return Text(
+                                          '\t\t$queueLeft',
+                                          style: const TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold),
+                                        );
+                                      } else {
+                                        return const Text('No data available.');
+                                      }
+                                    },
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                      const Divider(
+                        color: Color.fromARGB(59, 0, 0, 0),
+                        height: 0,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.calendar_today,
+                                  size: 30,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(bookingDate.substring(0, 11))
+                              ],
                             ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.access_time,
+                                  size: 30,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(bookingDate.substring(10)),
+                              ],
+                            ),
+                          ]),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Seat Quantities :'),
+                          Text('$numberOfPeople  People')
+                        ],
+                      ),
+                      const Text('** 1 table for 1 phone number **',
+                          style: TextStyle(color: Colors.red, fontSize: 12)),
+                      Center(
+                        child: Column(
+                          children: [
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
@@ -163,8 +262,8 @@ class _MyBookingState extends State<MyBooking> {
                               },
                               child: const Icon(
                                 Icons.qr_code,
-                                size: 30,
-                                color: Color.fromRGBO(237, 37, 78, 1),
+                                size: 70,
+                                color: Color.fromRGBO(0, 0, 0, 1),
                                 shadows: [
                                   Shadow(
                                     blurRadius: 7.0,
@@ -176,151 +275,66 @@ class _MyBookingState extends State<MyBooking> {
                                   ),
                                 ],
                               ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
+                            ),
                             Text(
-                              phone,
-                              style: const TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.bold),
+                              'Show QR code to staff',
+                              style: TextStyle(
+                                fontSize: 12,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    const Divider(
-                      color: Colors.black,
-                      height: 0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                            width: 100,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('No.'),
-                                Text('\t\t$bookingCodde',
-                                    style: const TextStyle(
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.bold))
-                              ],
-                            )),
-                        const Text('|',
-                            style: TextStyle(
-                                fontSize: 60, fontWeight: FontWeight.w100)),
-                        Container(
-                            width: 100,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Waiting List'),
-                                StreamBuilder<String>(
-                                  stream: Stream.periodic(
-                                          const Duration(seconds: 1))
-                                      .asyncMap(
-                                          (_) => ap.queueLeft(bookingCodde[0])),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const CircularProgressIndicator(); // or any loading indicator
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else if (snapshot.hasData) {
-                                      String bookingCodes = snapshot.data!;
-                                      return Text(
-                                        '\t\t$bookingCodes',
-                                        style: const TextStyle(
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.bold),
-                                      );
-                                    } else {
-                                      return const Text('No data available.');
-                                    }
-                                  },
-                                ),
-                              ],
-                            )),
-                      ],
-                    ),
-                    const Divider(
-                      color: Colors.black,
-                      height: 0,
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(
+                        color: Color.fromARGB(59, 0, 0, 0),
+                        height: 0,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Column(
                         children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.calendar_today,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(bookingDate.substring(0, 11))
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.access_time,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(bookingDate.substring(10)),
-                            ],
-                          ),
-                        ]),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Seat Quantities :'),
-                        Text('$numberOfPeople  People')
-                      ],
-                    ),
-                    const Text('** One number can reserve only one table. **',
-                        style: TextStyle(color: Colors.red, fontSize: 12)),
-                    Center(
-                        child: bookingCodde.isNotEmpty
-                            ? CustomButton(
-                                onPressed: () {
-                                  showMyDialog(
-                                      context: context,
-                                      title: 'Cancel Booking',
-                                      content:
-                                          'Are you sure you want to cancel booking?',
-                                      actionText: 'Yes',
-                                      onPressed: () => deleteBooking());
-                                },
-                                text: 'Cancel',
-                              )
-                            : const SizedBox()),
-                  ],
-                ));
-          } else {
-            return Center(
-                child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.4,
-              color: const Color.fromRGBO(231, 233, 232, 1),
-              alignment: Alignment.center,
-              child: const Text(
-                'No Booking',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+                          Center(
+                              child: bookingCodde.isNotEmpty
+                                  ? CustomButton(
+                                      onPressed: () {
+                                        showMyDialog(
+                                            context: context,
+                                            title: 'Cancel Booking',
+                                            content:
+                                                'Are you sure you want to cancel booking?',
+                                            actionText: 'Yes',
+                                            onPressed: () => deleteBooking());
+                                      },
+                                      text: 'Cancel',
+                                    )
+                                  : const SizedBox()),
+                        ],
+                      ),
+                    ],
+                  ));
+            } else {
+              return Center(
+                  child: Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.height * 0.4,
+                color: const Color.fromRGBO(231, 233, 232, 1),
+                alignment: Alignment.center,
+                child: const Text(
+                  'No Booking',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ));
-          }
-        })),
+              ));
+            }
+          })),
+        ),
         bottomNavigationBar: navBarBottom(
           currentIndex: _currentIndex,
         ));
@@ -340,11 +354,8 @@ class _MyBookingState extends State<MyBooking> {
           .doc(userData.docs[0].id)
           .delete();
       showSnackBar(context, 'Delete Booking Success');
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MyBooking()),
-        (route) => false,
-      );
+      getBookingData();
+      Navigator.of(context).pop();
     } catch (e) {
       showSnackBar(context, 'Delete Booking Failed');
     }

@@ -27,6 +27,7 @@ void showMyDialog({
             child: Text(actionText),
             onPressed: () {
               onPressed();
+              Navigator.of(context).pop();
             },
           ),
           // cancel button

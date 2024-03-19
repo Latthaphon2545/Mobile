@@ -99,9 +99,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             text: 'Table Status'),
       ],
-      bodyItems: [
-        const waitList(),
-        const tableStatusScrren(),
+      bodyItems: const [
+        waitList(),
+        tableStatusScrren(),
       ],
       actionBarView: const scanQr(),
       extendBody: false,

@@ -43,91 +43,93 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
+            color: Colors.white,
             child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 35),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                cursorColor: colorTheam,
-                controller: phoneController,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                onChanged: (value) {
-                  setState(() {
-                    phoneController.text = value;
-                    if (value.length >= 9) {
-                      colorTheam = Colors.green;
-                    } else if (value.isEmpty) {
-                      colorTheam = Colors.black;
-                    } else {
-                      colorTheam = Colors.red;
-                    }
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Phone number',
-                  hintStyle: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      color: Colors.grey),
-                  prefixIcon: Container(
-                    padding: const EdgeInsets.all(8),
-                    child: InkWell(
-                      onTap: () {
-                        showCountryPicker(
-                            context: context,
-                            countryListTheme: const CountryListThemeData(
-                              bottomSheetHeight: 500,
-                            ),
-                            onSelect: (value) {
-                              setState(() {
-                                SelectCountry = value;
-                              });
-                            });
+              padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 35),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    cursorColor: colorTheam,
+                    controller: phoneController,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                    onChanged: (value) {
+                      setState(() {
+                        phoneController.text = value;
+                        if (value.length >= 9) {
+                          colorTheam = Colors.green;
+                        } else if (value.isEmpty) {
+                          colorTheam = Colors.black;
+                        } else {
+                          colorTheam = Colors.red;
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Phone number',
+                      hintStyle: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: Colors.grey),
+                      prefixIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: InkWell(
+                          onTap: () {
+                            showCountryPicker(
+                                context: context,
+                                countryListTheme: const CountryListThemeData(
+                                  bottomSheetHeight: 500,
+                                ),
+                                onSelect: (value) {
+                                  setState(() {
+                                    SelectCountry = value;
+                                  });
+                                });
+                          },
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(SelectCountry.flagEmoji,
+                                    style: const TextStyle(fontSize: 20)),
+                                Text('+${SelectCountry.phoneCode}',
+                                    style: const TextStyle(fontSize: 15)),
+                              ]),
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: colorTheam,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: CustomButton(
+                      text: 'Next',
+                      onPressed: () {
+                        if (phoneController.text.trim().length >= 9) {
+                          sendPhoneNumber();
+                        } else {
+                          showSnackBar(
+                              context, 'Please enter a valid phone number');
+                        }
                       },
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(SelectCountry.flagEmoji,
-                                style: const TextStyle(fontSize: 20)),
-                            Text('+${SelectCountry.phoneCode}',
-                                style: const TextStyle(fontSize: 15)),
-                          ]),
                     ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: colorTheam,
-                      width: 2,
-                    ),
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: CustomButton(
-                  text: 'Next',
-                  onPressed: () {
-                    if (phoneController.text.trim().length >= 9) {
-                      sendPhoneNumber();
-                    } else {
-                      showSnackBar(
-                          context, 'Please enter a valid phone number');
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        )),
+            )),
       ),
     );
   }

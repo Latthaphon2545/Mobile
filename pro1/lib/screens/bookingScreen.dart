@@ -59,6 +59,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
           )),
       body: Container(
+        // color: Colors.white,
         padding: const EdgeInsets.only(left: 40, right: 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

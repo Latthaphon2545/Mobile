@@ -26,7 +26,7 @@ class _waitListState extends State<waitList> {
     return Scaffold(
       appBar: AppBar(
           title: const Text(
-            'Waitlist',
+            'Waiting List',
           ),
           actions: [
             IconButton(
@@ -121,21 +121,6 @@ class _waitListState extends State<waitList> {
           ),
         ),
       ),
-      // bottomNavigationBar: navBarBottom(currentIndex: 0),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => scanQr()),
-      //     );
-      //   },
-      //   child: const Icon(
-      //     Icons.qr_code,
-      //     color: Colors.white,
-      //   ),
-      //   backgroundColor: Color.fromRGBO(237, 37, 78, 1),
-      //   elevation: 0,
-      // ),
     );
   }
 }

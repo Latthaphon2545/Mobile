@@ -30,6 +30,7 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Infomation'),
+        backgroundColor: Colors.white,
       ),
       body: SafeArea(
         child: isLoading == true
@@ -37,43 +38,46 @@ class _UserInfomationScreenState extends State<UserInfomationScreen> {
                 child: CircularProgressIndicator(
                 color: Colors.purple,
               ))
-            : Center(
-                child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 25, horizontal: 35),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      cursorColor: Colors.black,
-                      controller: nameController,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                      onChanged: (value) {
-                        setState(() {
-                          nameController.text = value;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.person),
-                        hintText: 'Name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: CustomButton(
-                        text: 'Next',
-                        onPressed: () {
-                          storeData();
+            : Container(
+                color: Colors.white,
+                child: Center(
+                    child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 25, horizontal: 35),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextFormField(
+                        cursorColor: Colors.black,
+                        controller: nameController,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                        onChanged: (value) {
+                          setState(() {
+                            nameController.text = value;
+                          });
                         },
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.person),
+                          hintText: 'Name',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: CustomButton(
+                          text: 'Next',
+                          onPressed: () {
+                            storeData();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ),
       ),
     );
   }
